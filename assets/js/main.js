@@ -232,7 +232,34 @@
           filter: this.getAttribute('data-filter')
         });
         portfolioIsotope.on('arrangeComplete', function() {
-          // AOS.refresh()
+          AOS.refresh()
+        });
+      }, true);
+    }
+
+  });
+
+   window.addEventListener('load', () => {
+    let portfolioContainer = select('.price-container1');
+    if (portfolioContainer) {
+      let portfolioIsotope = new Isotope(portfolioContainer, {
+        itemSelector: '.price-item1'
+      });
+
+      let portfolioFilters = select('#price-flters1 li', true);
+
+      on('click', '#price-flters1 li', function(e) {
+        e.preventDefault();
+        portfolioFilters.forEach(function(el) {
+          el.classList.remove('filter-active');
+        });
+        this.classList.add('filter-active');
+
+        portfolioIsotope.arrange({
+          filter: this.getAttribute('data-filter')
+        });
+        portfolioIsotope.on('arrangeComplete', function() {
+          AOS.refresh()
         });
       }, true);
     }
@@ -275,13 +302,94 @@
     })
   });
 
-  document.addEventListener('DOMContentLoaded', function() {
-      setTimeout(function(){ document.getElementById("sh").click(); }, 2000);
-     
-    }, false);
+
+  window.addEventListener('load', function() {
+    document.getElementById("click").click();
+  })
+
+   var pill = document.getElementById("pills-profile-tab");
+   var pill2 = document.getElementById("pills-home-tab");
+
+    pill.onclick = function() {
+        setTimeout(function(){ document.getElementById("click1").click(); }, 200);
+    }
+
+    pill2.onclick = function() {
+        setTimeout(function(){ document.getElementById("click").click(); }, 200);
+    }
+  
+
+})();
 
 
-   console.log("anjay");
+( function ( $ ) {
+  /**
+   * Clock Class.
+   */
+  class Clock {
+    /**
+     * Constructor
+     */
+    constructor() {
+      this.initializeClock();
+    }
 
-})()
+    /**
+     * initializeClock
+     */
+    initializeClock() {
+      setInterval( () => this.time(), 1000 );
+    }
 
+    /**
+     * Numpad
+     *
+     * @param {String} str String
+     *
+     * @return {string} String
+     */
+    numPad( str ) {
+      const cStr = str.toString();
+      if ( 2 > cStr.length ) {
+        str = 0 + cStr;
+      }
+      return str;
+    }
+
+    /**
+     * Time
+     */
+    time() {
+      const currDate = new Date();
+      const currSec = currDate.getSeconds();
+      const currMin = currDate.getMinutes();
+      const curr24Hr = currDate.getHours();
+      const ampm = 12 <= curr24Hr ? 'pm' : 'am';
+      let currHr = curr24Hr % 12;
+      currHr = currHr ? currHr : 12;
+
+      const stringTime =
+        currHr +
+        ':' +
+        this.numPad( currMin ) +
+        ':' +
+        this.numPad( currSec );
+      const timeEmojiEl = $( '#time-emoji' );
+
+      if ( 5 <= curr24Hr && 17 >= curr24Hr ) {
+        timeEmojiEl.text( '🌞' );
+      } else {
+        timeEmojiEl.text( '🌜' );
+      }
+
+      $( '#time' ).text( stringTime );
+      $( '#ampm' ).text( ampm );
+    }
+  }
+
+  $(document).ready(function() {
+      console.log("anjayy");
+    });
+
+  new Clock();
+} )( jQuery );

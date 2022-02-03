@@ -4,7 +4,7 @@
  *
  * Contains the closing of the #content div and all content after.
  *
- * @link 
+ * 
  *
  * @package Script-Media
  * @subpackage Script-Media
@@ -34,6 +34,7 @@
       <div class="container">
         <div class="row">
 
+          <?php dynamic_sidebar( 'sidebar-2' ); ?>
           <div class="col-lg-3 col-md-6 footer-contact">
             <h3><img src="<?php echo get_template_directory_uri() . '/assets/img/logo.png';?>"></h3>
             <p>
@@ -45,13 +46,25 @@
 
           <div class="col-lg-3 col-md-6 footer-links">
             <h4>Useful Links</h4>
-            <ul>
+            <?php 
+              $args = array(
+                  'theme_location'    => 'sm-footer-menu',
+                  'container'         => 'ul',
+                  'menu'              => 'li',
+                  'link_before'       => '<i class="bx bx-chevron-right"></i>',
+                  'depth  '           => 0,
+
+              );
+              wp_nav_menu( $args ); 
+            ?>
+
+        <!--     <ul>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Home</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">About us</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Services</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Terms of service</a></li>
               <li><i class="bx bx-chevron-right"></i> <a href="#">Privacy policy</a></li>
-            </ul>
+            </ul> -->
           </div>
 
           <div class="col-lg-3 col-md-6 footer-links">

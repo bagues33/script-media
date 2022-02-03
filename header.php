@@ -4,12 +4,19 @@
  *
  * This is the template that displays all of the <head> section and everything up until <div id="content">
  *
- * @link 
+ * 
  *
  * @package Script-Media
  * @subpackage Script-Media
  * @since Script Media 1.0
  */
+  
+$menu_class = \SM_THEME\Inc\Menus::get_instance();
+$header_menu_id = $menu_class->get_menu_id( 'sm-header-menu' );
+
+$header_menus = wp_get_nav_menu_items( $header_menu_id );
+
+ 
 ?>
 
 <!DOCTYPE html>
@@ -33,16 +40,32 @@
 
 <body>
 
+  <?php if ( function_exists( 'wp_body_open' ) ) {
+    wp_body_open();
+  } 
+  ?>
+
   <!-- ======= Top Bar ======= -->
   <section id="topbar" class="d-flex align-items-center">
     <div class="container d-flex justify-content-center justify-content-md-between">
       <div class="contact-info d-flex align-items-center">
         <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">contact@example.com</a></i>
-        <i class="bi bi-phone d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
+        <i class="bi bi-phone d-none d-md-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
       </div>
-      <div class="social-links d-none d-md-flex align-items-center">
-        <a href="#">Control Panel</a>
-        <a href="#"> ID / ENG </a>
+      <div class="social-links d-md-flex align-items-center">
+         <a href="#">Control Panel</a>
+            <?php 
+              $menuParameters = array(
+                'theme_location' => 'sm-topbar-menu',
+                'container'       => false,
+                'echo'            => false,
+                'menu_class'      => 'id',
+                'items_wrap'      => '%3$s',
+                'depth'           => 0,
+              );
+
+              echo strip_tags(wp_nav_menu( $menuParameters ), '<a>' );
+             ?>
       </div>
     </div>
   </section>
@@ -53,56 +76,65 @@
 
       <!-- <h1 class="logo"><a href="index.html">BizLand<span>.</span></a></h1> -->
       <!-- Uncomment below if you prefer to use an image logo -->
-       <a href="index.html" class="logo"><img src="<?php echo get_template_directory_uri() . '/assets/img/logo.png';?>')"></a>
-        
+      <a href="index.php" class="logo">
+       <?php 
+          $custom_logo_id = get_theme_mod( 'custom_logo' );
+          $logo = wp_get_attachment_image_src( $custom_logo_id , 'full' );
+ 
+            if ( has_custom_logo() ) {
+                  echo '<img src="' . esc_url( $logo[0] ) . '" alt="' . get_bloginfo( 'name' ) . '">';
+              } else {
+                  echo '<h1 class="text-primary">' . get_bloginfo('name') . '</h1>';
+            }
+        ?>
+        </a>
            <?php 
-              $args = array(
-                  'theme_location'    => 'navbar',
-                  'container'         => 'nav',
-                  'container_class'   => 'navbar',
-                  'container_id'      => 'navbar',
-                  'menu'              => 'ul',
-                  'menu_class'        => 'dropdown',
-                  'depth  '           => 0,
-              );
-              wp_nav_menu( $args ); 
+              // $args = array(
+              //     'theme_location'    => 'sm-header-menu',
+              //     'container'         => 'nav',
+              //     'container_class'   => 'navbar',
+              //     'container_id'      => 'navbar',
+              //     'menu'              => 'ul',
+              //     'depth  '           => 0,
+              // );
+              // wp_nav_menu( $args ); 
            ?>
       <nav id="navbar" class="navbar">
-        <ul>
-          <li><a class="nav-link scrollto active" href="#">Home</a></li>
-           <li class="dropdown"><a href="#"><span>Server</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-            <li><a href="shared-hosting.php">Shared Hosting</a></li>
-              <li><a href="cloud-server.php">Cloud Server</a></li>
-              <li><a href="vps.php">VPS</a></li>
-            </ul>
-          </li>
-          <li class="dropdown"><a href="#"><span>Dedicated Severs</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-              <li><a href="cloud-dediacated-server.php">Cloud Dedicated Servers</a></li>
-              <li><a href="virtual-dedicated-server.php">Virtual Dedicated Severs</a></li>
-            </ul>
-          </li>
-          <li class="dropdown"><a href="#"><span>More</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-              <li><a href="domain.php">Domains</a></li>
-              <li><a href="iix.php">IIX (location Singapore)</a></li>
-              <li><a href="usa.php">USA (location USA)</a></li>
-              <li><a href="cpanel.php">Cpanel (optional)</a></li>
-            </ul>
-          </li>
-          <li><a class="nav-link scrollto " href="pricing.php">Pricing</a></li>
-          <li class="dropdown"><a href="#"><span>Support</span> <i class="bi bi-chevron-down"></i></a>
-            <ul>
-              <li><a href="#">Control Panel</a></li>
-              <li><a href="#">Contact Support</a></li>
-              <li><a href="#">Contact Sales</a></li>
-              <li><a href="#">Blog</a></li>
-              <li><a href="#">Solutions for you?</a></li>
-            </ul>
-          </li>
-        </ul>
-     
+        <?php 
+            if ( ! empty( $header_menus ) && is_array( $header_menus ) ) {
+         ?>
+          <ul>
+             <?php 
+                foreach ($header_menus as $menu_item) {
+                  if ( ! $menu_item->menu_item_parent ) {
+                    $child_menu_items = $menu_class->get_child_menu_items( $header_menus, $menu_item->ID );
+                    $has_children = ! empty( $child_menu_items ) && is_array( $child_menu_items );
+
+                    if ( ! $has_children ) {
+                      ?>
+                       <li><a class="nav-link scrollto" href="<?php echo esc_url( $menu_item->url ); ?>"><?php echo esc_html( $menu_item->title ); ?></a></li>
+                       <?php
+                    } else {
+                      ?>
+                      <li class="dropdown"><a href="<?php echo esc_url( $menu_item->url ); ?>"><span><?php echo esc_html( $menu_item->title ); ?></span></a>
+                        <ul>
+                          <?php 
+                            foreach ( $child_menu_items as $child_menu_item ) {
+                              ?>
+                                <li><a href="<?php echo esc_url( $child_menu_item->url ); ?>"><?php echo esc_html( $child_menu_item->title ); ?></a></li>
+                             <?php
+                            }
+                           ?>
+                        </ul>
+                      </li>
+                       <?php 
+                    }
+                   
+                  }
+                }
+              ?>
+          </ul>
+        <?php } ?>
         <i class="bi bi-list mobile-nav-toggle"></i>
       </nav><!-- .navbar -->
 
